@@ -1,8 +1,38 @@
 body {
+  margin: 0;
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: #303030;
+  font: 15px 'Roboto', sans-serif;
+  color: #fff;
 }
 
 a {
   color: #00B7FF;
 }
+
+.list {
+  background: #424242;
+  margin: 4px;
+  padding: 20px;
+  
+}
+
+table.sortable thead {
+    background-color:#666666;
+    color: #eee;
+    font-weight: bold;
+    cursor: default;
+    
+}
+
+th {
+  padding: 5px;
+  margin: 2px;
+  padding-right: 20px;
+}
+
+.center_text {
+  text-align: center;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
