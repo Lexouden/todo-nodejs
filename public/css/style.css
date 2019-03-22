@@ -35,4 +35,8 @@ th {
   text-align: center;
 }
 
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after { 
+  content: " \25B4\25BE" 
+}
+
 @import url('https://fonts.googleapis.com/css?family=Roboto');

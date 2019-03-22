@@ -1,3 +1,4 @@
+//* Import modules
 import {
   db
 } from './database.js';
@@ -13,6 +14,10 @@ function uuid() {
   }
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
     s4() + '-' + s4() + s4() + s4();
+}
+
+export async function getItem() {
+  
 }
 
 export function newItem({
@@ -39,6 +44,12 @@ export function editItem({
   
 }
 
-export function deleteItem(id) {
+export async function deleteItem(id, listID) {
+  let list = await db.lists.get(listID);
 
+  delete list.items[id];
+
+  db.lists.update(id, list.items).catch((error) => {
+    console.error(error);
+  });
 }
