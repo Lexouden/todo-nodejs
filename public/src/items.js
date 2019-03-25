@@ -49,7 +49,7 @@ export async function deleteItem(id, listID) {
 
   delete list.items[id];
 
-  db.lists.update(id, list.items).catch((error) => {
+  db.lists.put(list).catch((error) => {
     console.error(error);
   });
 }
