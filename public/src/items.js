@@ -9,11 +9,12 @@ import {
 
 db.open();
 
+// Get list which contains item
 export async function getItemList(listID) {
   return await db.lists.get(listID);
 }
 
-export async function newItem({
+export async function newItem({ // Create new item and push to selected list
   description,
   duration,
   status,
@@ -32,7 +33,7 @@ export async function newItem({
   await updateScreen();
 }
 
-export async function editItem({
+export async function editItem({ // Edit item
   id,
   change,
   listID
@@ -44,9 +45,9 @@ export async function editItem({
   if (!change instanceof Object) return console.error('"Change" has to be an Object with properties');
 
   // Check if change present, if so change it.
-  if (typeof change.description !== 'undefined' || change.description !== null || change.description !== '') list.items[id].description = change.description || list.items[id].description;
-  if (typeof change.duration !== 'undefined' || change.duration !== null || change.duration !== '') list.items[id].duration = change.duration || list.items[id].duration;
-  if (typeof change.status !== 'undefined' || change.status !== null || change.status !== '') list.items[id].status = change.status || list.items[id].status;
+  change.description ? list.items[id].description = change.description : list.items[id].description = list.items[id].description;
+  change.duration ? list.items[id].duration = change.duration : list.items[id].duration = list.items[id].duration;
+  change.status ? list.items[id].status = change.status : list.items[id].status = list.items[id].status;
 
   // Push update to database
   db.lists.update(listID, list).catch((error) => {
@@ -62,7 +63,7 @@ export async function deleteItem(id, listID) {
     console.error(error);
   });
 
-  if(!list) return console.error('No list retreived')
+  if (!list) return console.error('No list retreived')
 
   // Delete item from object
   delete list.items[id];
