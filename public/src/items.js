@@ -2,6 +2,10 @@
 import {
   db
 } from './database.js';
+import {
+  updateScreen,
+  uuid
+} from './main.js'
 
 db.open();
 
@@ -16,7 +20,7 @@ export async function newItem({
   id
 }) {
   db.lists.update(id, {
-    [`items.${uuid()}`]: {
+    [`items.${await uuid()}`]: {
       description: description,
       duration: duration,
       status: status
@@ -54,7 +58,11 @@ export async function editItem({
 
 export async function deleteItem(id, listID) {
   // Get list containing item
-  let list = await db.lists.get(listID);
+  let list = await db.lists.get(listID).catch((error) => {
+    console.error(error);
+  });
+
+  if(!list) return console.error('No list retreived')
 
   // Delete item from object
   delete list.items[id];

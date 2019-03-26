@@ -2,6 +2,9 @@
 import {
   db
 } from './database.js';
+import {
+  updateScreen
+} from './main.js'
 
 db.open();
 

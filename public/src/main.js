@@ -12,23 +12,20 @@ import {
   deleteItem,
   getItemList
 } from './items.js';
-import {
-  db
-} from './database.js';
 
 // Get list container
 const lists = document.getElementById('lists');
 
 // Print / Write results to screen
-const writeToScreen = (list) => {
-  let tableID = uuid();
+const writeToScreen = async (list) => {
+  let tableID = await uuid();
 
   if (!list.name) return console.error('No listname given');
 
   // Create list element
   const listElement = document.createElement('div');
   lists.appendChild(listElement);
-  listElement.classList.add('col-sm', 'list'); // Add classes to list  
+  listElement.classList.add('col-xl-5', 'col-12', 'list'); // Add classes to list  
 
   // Add a title to the list
   const title = document.createElement('h3');
@@ -38,7 +35,7 @@ const writeToScreen = (list) => {
   // Create sortable table
   const table = document.createElement('table');
   listElement.appendChild(table);
-  table.classList.add('sortable');
+  table.classList.add('table', 'table-striped', 'table-dark', 'table-hover', 'sortable', 'w-100');
   table.id = tableID;
 
   // Create Table contents
@@ -96,8 +93,8 @@ const writeToScreen = (list) => {
           break;
         case 3: 
           td.appendChild(button);
-          button.classList.add('btn', 'btn-danger', 'far', 'fa-times-circle');
-          button.setAttribute('onclick', 'deleteItem(this)')
+          button.classList.add('btn', 'btn-danger', 'far', 'fa-times-circle', 'removebtn');
+          button.addEventListener('click', removeItem);
           button.setAttribute('data-item-id', key)
           button.setAttribute('data-list-id', list.id)
           break;  
@@ -125,7 +122,7 @@ const writeToScreen = (list) => {
 })();
 
 // Generate random ID
-function uuid() {
+export async function uuid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
       .toString(16)
@@ -135,7 +132,7 @@ function uuid() {
     s4() + '-' + s4() + s4() + s4();
 }
 
-async function updateScreen() {
+export async function updateScreen() {
   // Get all list elements
   const listClass = document.getElementsByClassName('list');
   listClass.remove(); // Remove list elements from DOM
@@ -149,6 +146,33 @@ async function updateScreen() {
   }catch(e){
     console.log(e.stack);
   }
+}
+
+// Functions for item management
+function createNewItem() {
+
+}
+
+function updateItem() {
+
+}
+
+async function removeItem() {
+  if(!this.dataset.itemId && !this.dataset.listId) return console.error('Missing data attribute')
+  await deleteItem(this.dataset.itemId, parseInt(this.dataset.listId));
+}
+
+// Functions for list management 
+function createNewList() {
+
+}
+
+function updateList(list) {
+
+}
+
+function removeList(list) {
+
 }
 
 /**
@@ -181,5 +205,3 @@ window.newItem = newItem;
 window.editItem = editItem;
 window.deleteItem = deleteItem;
 window.getItem = getItemList;
-
-window.updateScreen = updateScreen;
