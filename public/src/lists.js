@@ -15,27 +15,33 @@ export async function getList(id) {
 }
 
 // Make a new list
-export function newList(name) {
+export async function newList(name) {
   db.lists.put({
     name: name,
     items: {}
   }).catch((error) => {
     console.error(error);
   });
+
+  await updateScreen();
 }
 
 // Edit listname
-export function editList(id, change) {
+export async function editList(id, change) {
   db.lists.update(id, {
     name: change
   }).catch((error) => {
     console.error(error);
   });
+
+  await updateScreen();
 }
 
 // Delete list from database
-export function deleteList(id) {
+export async function deleteList(id) {
   db.lists.delete(id).catch((error) => {
     console.error(error);
   });
+
+  await updateScreen();
 }

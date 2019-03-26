@@ -9,7 +9,8 @@ import {
 import {
   newItem,
   editItem,
-  deleteItem
+  deleteItem,
+  getItemList
 } from './items.js';
 import {
   db
@@ -21,8 +22,8 @@ const lists = document.getElementById('lists');
 // Print / Write results to screen
 const writeToScreen = (list) => {
   let tableID = uuid();
-  
-  if(!list.name) return console.error('No listname given');
+
+  if (!list.name) return console.error('No listname given');
 
   // Create list element
   const listElement = document.createElement('div');
@@ -44,25 +45,29 @@ const writeToScreen = (list) => {
   let thead = document.createElement('thead');
   let tbody = document.createElement('tbody');
   let tr = document.createElement('tr');
-  
+
   table.appendChild(thead);
   thead.appendChild(tr);
 
   // Create table heads
-  for (let x = 0; x <= 2; x++) {
+  for (let x = 0; x <= 3; x++) {
     let th = document.createElement('th');
     switch (x) {
-      case 0: 
+      case 0:
         th.innerText = 'Task';
         th.classList.add('sorttable_nosort');
         break;
-      case 1: 
+      case 1:
         th.innerText = 'Duration';
         break;
       case 2:
         th.innerText = 'Status';
         break;
-      default: 
+      case 3: 
+        th.innerText = '';
+        th.classList.add('sorttable_nosort');
+        break;
+      default:
         console.error('An unexpected error occured');
     }
     tr.appendChild(th);
@@ -71,24 +76,32 @@ const writeToScreen = (list) => {
   table.appendChild(tbody);
 
   // Loop through all items
-  for (const [key, item] of Object.entries(list.items)) { 
+  for (const [key, item] of Object.entries(list.items)) {
     let tr = document.createElement('tr');
+    let button = document.createElement('button');
     tbody.appendChild(tr);
 
     // Loop through item properties
-    for (let x = 0; x <= 2; x++) {
+    for (let x = 0; x <= 3; x++) {
       let td = document.createElement('td');
       switch (x) {
-        case 0: 
+        case 0:
           td.innerText = item.description;
           break;
-        case 1: 
+        case 1:
           td.innerText = `${item.duration} min.`;
           break;
         case 2:
           td.innerText = item.status;
           break;
-        default: 
+        case 3: 
+          td.appendChild(button);
+          button.classList.add('btn', 'btn-danger', 'far', 'fa-times-circle');
+          button.setAttribute('onclick', 'deleteItem(this)')
+          button.setAttribute('data-item-id', key)
+          button.setAttribute('data-list-id', list.id)
+          break;  
+        default:
           console.error('An unexpected error occured');
       }
       tr.appendChild(td);
@@ -101,12 +114,12 @@ const writeToScreen = (list) => {
 
 // Load lists
 (async () => {
-  try{  
+  try {
     var lists = await getLists();
     lists.forEach(list => {
       writeToScreen(list);
     });
-  }catch(e){
+  } catch (e) {
     console.log(e.stack);
   }
 })();
@@ -122,8 +135,39 @@ function uuid() {
     s4() + '-' + s4() + s4() + s4();
 }
 
+async function updateScreen() {
+  // Get all list elements
+  const listClass = document.getElementsByClassName('list');
+  listClass.remove(); // Remove list elements from DOM
+
+  // Re-render lists
+  try{  
+    var newLists = await getLists();
+    newLists.forEach(list => {
+      writeToScreen(list);
+    });
+  }catch(e){
+    console.log(e.stack);
+  }
+}
+
 /**
- ** functions to be called in inspect console for testing and debugging.
+ * Copy pasta function for removing elements easily
+ */
+Element.prototype.remove = function () {
+  this.parentElement.removeChild(this);
+}
+
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
+  for (var i = this.length - 1; i >= 0; i--) {
+    if (this[i] && this[i].parentElement) {
+      this[i].parentElement.removeChild(this[i]);
+    }
+  }
+}
+
+/**
+ ** Functions to be called in inspect console for testing and debugging.
  */
 window.writeToScreen = writeToScreen;
 
@@ -136,3 +180,6 @@ window.deleteList = deleteList;
 window.newItem = newItem;
 window.editItem = editItem;
 window.deleteItem = deleteItem;
+window.getItem = getItemList;
+
+window.updateScreen = updateScreen;
