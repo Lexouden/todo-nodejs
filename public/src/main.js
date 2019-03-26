@@ -37,11 +37,19 @@ const writeToScreen = async (list) => {
   title.innerText = list.name;
   listElement.appendChild(title);
 
-  const button = document.createElement('button');
-  button.classList.add('btn', 'btn-danger', 'float-right', 'fa', 'fa-times')
-  button.addEventListener('click', removeList);
-  button.setAttribute('data-list-id', list.id);
-  listElement.appendChild(button);
+  const deletebtn = document.createElement('button');
+  deletebtn.classList.add('btn', 'btn-danger', 'float-right', 'fa', 'fa-times')
+  deletebtn.addEventListener('click', removeList);
+  deletebtn.setAttribute('data-list-id', list.id);
+
+  const editbtn = document.createElement('button');
+  editbtn.classList.add('btn', 'btn-primary', 'float-right', 'far', 'fa-edit', 'mr-2')
+  editbtn.addEventListener('click', updateList);
+  editbtn.setAttribute('data-list-id', list.id);
+  editbtn.setAttribute('data-list-name', list.name);
+
+  listElement.appendChild(deletebtn);
+  listElement.appendChild(editbtn);
 
 
   // Create sortable table
@@ -160,7 +168,9 @@ export async function updateScreen() {
   }
 }
 
-// Functions for item management
+/** 
+ ** Functions for item management
+ */
 async function createNewItem() {
   let label = $('#itemModalLabel');
   let body = $('#itemModalBody');
@@ -217,7 +227,9 @@ async function removeItem() {
   await deleteItem(this.dataset.itemId, parseInt(this.dataset.listId));
 }
 
-// Functions for list management 
+/** 
+ ** Functions for list management
+ */
 function createNewList() {
   let label = $('#listModalLabel');
   let body = $('#listModalBody');
@@ -247,10 +259,18 @@ function saveList() {
     $('#listModal').modal('toggle'); // Close Modal
 
     return newList(name);
+  } else if (type === 'update') {
+    let name = $('#name').val();
+    let id = $('#listModalSave').data('parameter-id');
+    if (!name || name === '') return; // Check if name is given
+    $('#listModal').modal('toggle'); // Close Modal
+
+    return editList(id, name);
   }
+
 }
 
-async function updateList() {
+async function updateList() { // Update list name
   let label = $('#listModalLabel');
   let body = $('#listModalBody');
   let save = $('#listModalSave');

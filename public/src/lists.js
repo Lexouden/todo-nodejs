@@ -46,5 +46,5 @@ export async function deleteList(id) {
     console.error(error);
   });
 
-  await updateScreen();
+  return await updateScreen();
 }
