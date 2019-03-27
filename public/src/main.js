@@ -4,13 +4,13 @@ import {
   editList,
   deleteList,
   getLists,
-  getList
 } from './lists.js';
 import {
   newItem,
   editItem,
   deleteItem,
-  getItemList
+  getItemList,
+  getItem
 } from './items.js';
 
 // Get list container
@@ -96,7 +96,8 @@ const writeToScreen = async (list) => {
   // Loop through all items
   for (const [key, item] of Object.entries(list.items)) {
     let tr = document.createElement('tr');
-    let button = document.createElement('button');
+    let deletebtn = document.createElement('button');
+    let editbtn = document.createElement('button');
     tbody.appendChild(tr);
 
     // Loop through item properties
@@ -113,11 +114,18 @@ const writeToScreen = async (list) => {
           td.innerText = item.status;
           break;
         case 3:
-          td.appendChild(button);
-          button.classList.add('btn', 'btn-danger', 'far', 'fa-times-circle', 'removebtn');
-          button.addEventListener('click', removeItem);
-          button.setAttribute('data-item-id', key)
-          button.setAttribute('data-list-id', list.id)
+          td.appendChild(editbtn); // Create edit button
+          editbtn.classList.add('btn', 'btn-primary', 'far', 'fa-edit', 'editbtn');
+          editbtn.addEventListener('click', updateItem);
+          editbtn.setAttribute('data-item-id', key);
+          editbtn.setAttribute('data-list-id', list.id);
+
+          td.appendChild(deletebtn); // Create delete button
+          deletebtn.classList.add('btn', 'btn-danger', 'far', 'fa-times-circle', 'removebtn');
+          deletebtn.addEventListener('click', removeItem);
+          deletebtn.setAttribute('data-item-id', key);
+          deletebtn.setAttribute('data-list-id', list.id);
+
           break;
         default:
           console.error('An unexpected error occured');
@@ -261,48 +269,47 @@ function saveItem() {
   }
 }
 
-function updateItem() {
+async function updateItem() {
   let label = $('#itemModalLabel');
   let body = $('#itemModalBody');
   let save = $('#itemModalSave');
 
+  let itemID = $(this).data('item-id');
+  let listID = $(this).data('list-id');
+
+  let item = await getItem(itemID, listID);
+
   let template = `<form class="m-2">
   <div class="form-group row">
     <label for="description">Description</label>
-    <textarea class="form-control" id="description" cols="30" rows="3" required></textarea>
+    <textarea class="form-control" id="description" cols="30" rows="3" required>${item.description}</textarea>
   </div>
   <div class="form-group row">
     <div class="form-group">
       <label for="duration">Duration</label>
-      <input class="form-control" type="number">
+      <input class="form-control" type="number" value="${item.duration}">
     </div>
     <div class="form-group form-check">
       <label for="status">Status</label>
       <select id="status" class="form-control" required>
-        <option value="Unfinished" selected>Unfinished</option>
+        <option value="Unfinished">Unfinished</option>
         <option value="Finished">Finished</option>
       </select>
     </div>
   </div>
-  <div class="form-group row">
-    <label for="listSelect">List</label>
-    <select class="form-control" id="listSelect" required>
-      <option disabled selected>Select a list to assign the item to.</option>
-    </select>
-  </div>
 </form>`;
+
+  $('status').val(item.status);
 
   $('#itemModal').modal('toggle');
 
   label.text('Create new item');
   body.html(template);
   save.data('type', 'new');
+  save.data('parameter-id', itemID);
+  save.data('parameter-listId', listID);
 
-  // Add all lists to select field
-  let lists = await getLists();
-  for (let list in lists) {
-    $('#listSelect').append(`<option value=${lists[list].id}>${lists[list].name}</option>`)
-  }
+  
 }
 
 async function removeItem() {
