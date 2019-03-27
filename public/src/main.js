@@ -18,6 +18,7 @@ const lists = document.getElementById('lists');
 $('#newItemBtn').click(createNewItem);
 $('#newListBtn').click(createNewList);
 $('#listModalSave').click(saveList);
+$('#itemModalSave').click(saveItem);
 
 $('#myModal').modal('handleUpdate')
 
@@ -174,6 +175,7 @@ export async function updateScreen() {
 async function createNewItem() {
   let label = $('#itemModalLabel');
   let body = $('#itemModalBody');
+  let save = $('#itemModalSave');
 
   let template = `<form class="m-2">
   <div class="form-group row">
@@ -205,21 +207,102 @@ async function createNewItem() {
 
   label.text('Create new item');
   body.html(template);
+  save.data('type', 'new');
 
   // Add all lists to select field
   let lists = await getLists();
   for (let list in lists) {
     $('#listSelect').append(`<option value=${lists[list].id}>${lists[list].name}</option>`)
   }
-
 }
 
 function saveItem() {
+  let save = $('#itemModalSave');
+  let type = save.data('type');
 
+  if (type === 'new') {
+    let description = $('#description').val();
+    let duration = $('#duration').val();
+    let status = $('#status').val();
+    let list = parseInt($('#listSelect').val());
+
+    if (!description || description === '') return; // Check if description is given
+    if (!duration || duration === '') duration = 0; // Check if duration is given else give default value
+    if (!status || status === '') status = "Unfinished"; // Check if status is given else set default status
+    if (!list || list === '') return;
+
+    $('#itemModal').modal('toggle'); // Close Modal
+
+    return newItem({
+      description: description,
+      duration: duration,
+      status: status,
+      id: list
+    });
+  } else if (type === 'update') {
+    let description = $('#description').val();
+    let duration = $('#duration').val();
+    let status = $('#status').val();
+    let id = $('#itemModalSave').data('parameter-id');
+    let listId = $('#itemModalSave').data('parameter-listId');
+
+    if (!name || name === '') return; // Check if name is given
+    $('#itemModal').modal('toggle'); // Close Modal
+
+    return editItem({
+      id: id,
+      change: {
+        description: description,
+        duration: duration,
+        status: status
+      },
+      listID: listId
+    });
+  }
 }
 
 function updateItem() {
+  let label = $('#itemModalLabel');
+  let body = $('#itemModalBody');
+  let save = $('#itemModalSave');
 
+  let template = `<form class="m-2">
+  <div class="form-group row">
+    <label for="description">Description</label>
+    <textarea class="form-control" id="description" cols="30" rows="3" required></textarea>
+  </div>
+  <div class="form-group row">
+    <div class="form-group">
+      <label for="duration">Duration</label>
+      <input class="form-control" type="number">
+    </div>
+    <div class="form-group form-check">
+      <label for="status">Status</label>
+      <select id="status" class="form-control" required>
+        <option value="Unfinished" selected>Unfinished</option>
+        <option value="Finished">Finished</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="listSelect">List</label>
+    <select class="form-control" id="listSelect" required>
+      <option disabled selected>Select a list to assign the item to.</option>
+    </select>
+  </div>
+</form>`;
+
+  $('#itemModal').modal('toggle');
+
+  label.text('Create new item');
+  body.html(template);
+  save.data('type', 'new');
+
+  // Add all lists to select field
+  let lists = await getLists();
+  for (let list in lists) {
+    $('#listSelect').append(`<option value=${lists[list].id}>${lists[list].name}</option>`)
+  }
 }
 
 async function removeItem() {
@@ -267,7 +350,6 @@ function saveList() {
 
     return editList(id, name);
   }
-
 }
 
 async function updateList() { // Update list name
@@ -316,15 +398,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
 /**
  ** Functions to be called in inspect console for testing and debugging.
  */
-window.writeToScreen = writeToScreen;
-
-window.getLists = getLists;
-window.getList = getList;
-window.newList = newList;
-window.editList = editList;
-window.deleteList = deleteList;
 
 window.newItem = newItem;
 window.editItem = editItem;
-window.deleteItem = deleteItem;
 window.getItem = getItemList;

@@ -14,6 +14,13 @@ export async function getItemList(listID) {
   return await db.lists.get(listID);
 }
 
+export async function getItem(id, listID) {
+  let list = await db.lists.get(listID); // Get list of Item
+  let item = list.items[id]; // Get item from list
+  
+  return item; // Send item back
+}
+
 export async function newItem({ // Create new item and push to selected list
   description,
   duration,
