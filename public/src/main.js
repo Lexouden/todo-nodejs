@@ -185,7 +185,7 @@ async function createNewItem() {
   let body = $('#itemModalBody');
   let save = $('#itemModalSave');
 
-  let template = `<form class="m-2">
+  let template = /* html */ `<form class="m-2">
   <div class="form-group row">
     <label for="description">Description</label>
     <textarea class="form-control" id="description" cols="30" rows="3" required></textarea>
@@ -193,7 +193,7 @@ async function createNewItem() {
   <div class="form-group row">
     <div class="form-group">
       <label for="duration">Duration</label>
-      <input class="form-control" type="number">
+      <input id="duration" class="form-control" type="number">
     </div>
     <div class="form-group form-check">
       <label for="status">Status</label>
@@ -230,7 +230,7 @@ function saveItem() {
 
   if (type === 'new') {
     let description = $('#description').val();
-    let duration = $('#duration').val();
+    let duration = parseInt($('#duration').val());
     let status = $('#status').val();
     let list = parseInt($('#listSelect').val());
 
